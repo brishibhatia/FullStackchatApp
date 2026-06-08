@@ -29,7 +29,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production" && !process.env.VERCEL) {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
   app.get("*", (req, res) => {
@@ -37,7 +37,13 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-server.listen(PORT, () => {
-  console.log("server is running on PORT:" + PORT);
+if (!process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log("server is running on PORT:" + PORT);
+    connectDB();
+  });
+} else {
   connectDB();
-});
+}
+
+export default server;
